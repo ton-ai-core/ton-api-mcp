@@ -68,6 +68,13 @@ class TonApiCli {
           .description(`Call method ${moduleName}.${methodName}`)
           .option('-p, --params <json>', 'Parameters in JSON format')
           .option('-a, --args <args...>', 'Space-separated arguments')
+          .addHelpText('after', `
+Examples:
+  ${chalk.green(`node bin/ton-api-cli.js ${moduleName} ${methodName} -a "arg1" -a "arg2"`)}
+  ${chalk.green(`node bin/ton-api-cli.js ${moduleName} ${methodName} -p '{"param1": "value1", "param2": "value2"}'`)}
+
+API Signature: ${this.wrapper.getMethodSignature(moduleName, methodName)}
+`)
           .action(async (options) => {
             try {
               let args: any[] = [];
@@ -122,14 +129,36 @@ class TonApiCli {
       .action(() => {
         const modules = this.wrapper.getApiModules();
         
-        console.log(chalk.green(`Available modules and methods of TON API:`));
+        console.log(chalk.green(`Available modules and methods of TON API (sorted alphabetically):`));
         
-        modules.forEach(moduleName => {
+        // Sort modules alphabetically
+        const sortedModules = [...modules].sort();
+        
+        sortedModules.forEach(moduleName => {
           console.log(chalk.blue(`\n${moduleName}`));
           
-          const methods = this.wrapper.getModuleMethods(moduleName);
+          // Get methods and sort them alphabetically
+          const methods = this.wrapper.getModuleMethods(moduleName).sort();
+          
           methods.forEach(methodName => {
+            // Get method description and signature
+            const description = this.wrapper.getMethodDescription(moduleName, methodName);
+            const signature = this.wrapper.getMethodSignature(moduleName, methodName);
+            
             console.log(chalk.yellow(`  - ${methodName}`));
+            
+            // Output description if available
+            if (description) {
+              console.log(chalk.white(`    Description: ${description}`));
+            }
+            
+            // Output method signature if available
+            if (signature) {
+              console.log(chalk.gray(`    Signature: ${signature}`));
+            }
+            
+            // Add help instructions
+            console.log(chalk.gray(`    Use: node bin/ton-api-cli.js ${moduleName} ${methodName} --help for more details`));
           });
         });
       });

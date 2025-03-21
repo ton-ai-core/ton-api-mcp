@@ -139,4 +139,62 @@ export class TonApiCliWrapper {
   getNetwork(): string {
     return this.network;
   }
+
+  /**
+   * Gets description of an API method from JSDoc comments
+   * @param moduleName API module name
+   * @param methodName API method name
+   * @returns Description of the method or empty string if not found
+   */
+  getMethodDescription(moduleName: string, methodName: string): string {
+    if (!this.hasMethod(moduleName, methodName)) {
+      return '';
+    }
+    
+    try {
+      // In the generated SDK, descriptions are not directly accessible in runtime
+      // We return a generic description based on the method and module name
+      return `Method ${methodName} from ${moduleName} module`;
+    } catch (error) {
+      return '';
+    }
+  }
+
+  /**
+   * Gets parameter signature of an API method
+   * @param moduleName API module name
+   * @param methodName API method name
+   * @returns Parameter signature of the method or empty string if not found
+   */
+  getMethodSignature(moduleName: string, methodName: string): string {
+    if (!this.hasMethod(moduleName, methodName)) {
+      return '';
+    }
+    
+    try {
+      // Analyze the method in runtime
+      const moduleObj = (this.client as any)[moduleName];
+      const methodObj = moduleObj[methodName];
+      
+      // Get the parameters object from first line of the function
+      const methodStr = methodObj.toString();
+      const paramMatch = /\(([^)]*)\)\s*=>/.exec(methodStr);
+      
+      if (paramMatch && paramMatch[1]) {
+        const paramStr = paramMatch[1].trim();
+        
+        if (paramStr === '') {
+          return 'No parameters required';
+        } else if (paramStr === 'params = {}') {
+          return 'Optional RequestParams object';
+        } else {
+          return paramStr;
+        }
+      }
+      
+      return 'Parameter structure unavailable';
+    } catch (error) {
+      return '';
+    }
+  }
 } 
