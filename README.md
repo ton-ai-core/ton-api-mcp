@@ -1,4 +1,4 @@
-# TON Viewer CLI
+# TON API CLI
 
 Консольный интерфейс для работы с [TON API](https://tonapi.io). Позволяет использовать все возможности TON API через удобный командный интерфейс.
 
@@ -13,8 +13,8 @@
 ## Установка
 
 ```bash
-git clone https://github.com/yourusername/tonviewer-cli.git
-cd tonviewer-cli
+git clone https://github.com/ton-ai-core/tonapi-cli.git
+cd tonapi-cli
 npm install
 npm run build
 ```

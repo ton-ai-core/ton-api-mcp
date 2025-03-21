@@ -1,10 +1,10 @@
 {
-  "name": "tonviewer-cli",
+  "name": "tonapi-cli",
   "version": "0.1.0",
-  "description": "CLI tool for interacting with Tonviewer API",
+  "description": "CLI tool for interacting with Tonapi API",
   "main": "bin/index.js",
   "bin": {
-    "tonviewer": "bin/index.js",
+    "tonapi": "bin/index.js",
     "tonapi-cli": "bin/ton-api-cli.js"
   },
   "scripts": {
@@ -22,7 +22,7 @@
     "ton",
     "blockchain",
     "cli",
-    "tonviewer"
+    "tonapi"
   ],
   "author": "",
   "license": "MIT",
