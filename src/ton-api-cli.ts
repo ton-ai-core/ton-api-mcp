@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { TonApiCliWrapper } from './ton-api-cli-wrapper';
 
 /**
- * Автоматически генерирует CLI команды для tonapi-sdk-js
+ * Automatically generates CLI commands for tonapi-sdk-js
  */
 class TonApiCli {
   private program: Command;
@@ -13,21 +13,21 @@ class TonApiCli {
   constructor() {
     this.program = new Command();
     
-    // Настраиваем основную программу
+    // Configure the main program
     this.program
       .name('tonapi-cli')
-      .description('CLI для работы с TON API')
+      .description('CLI tool for working with TON API')
       .version('1.0.0')
-      .option('-t, --testnet', 'Использовать тестовую сеть вместо основной')
-      .option('-k, --api-key <key>', 'API ключ для TON API')
+      .option('-t, --testnet', 'Use testnet instead of mainnet')
+      .option('-k, --api-key <key>', 'API key for TON API')
       .hook('preAction', (thisCommand, actionCommand) => {
-        // Пропускаем создание обертки с проверкой API-ключа для команды list
+        // Skip creating wrapper with API key check for the list command
         const commandName = actionCommand.name();
         if (commandName === 'list') {
-          return; // Для list используем уже созданный экземпляр с skipApiKeyCheck: true
+          return; // For list command, use the existing instance with skipApiKeyCheck: true
         }
         
-        // Создаем экземпляр обертки с учетом переданных опций для выполнения команды
+        // Create a wrapper instance with provided options for command execution
         const options = thisCommand.opts();
         this.wrapper = new TonApiCliWrapper({
           testnet: options.testnet,
@@ -35,63 +35,63 @@ class TonApiCli {
         });
       });
     
-    // Создаем экземпляр обертки API с пропуском проверки API-ключа только для генерации команд
+    // Create API wrapper instance with skipping API key check for commands generation only
     this.wrapper = new TonApiCliWrapper({ skipApiKeyCheck: true });
     
-    // Генерируем команды для всех модулей API
+    // Generate commands for all API modules
     this.generateCommands();
   }
 
   /**
-   * Генерирует команды для всех модулей API
+   * Generates commands for all API modules
    */
   private generateCommands() {
-    // Получаем список всех модулей API
+    // Get list of all API modules
     const modules = this.wrapper.getApiModules();
     
-    console.log(chalk.green(`Найдено ${modules.length} модулей API:`));
+    console.log(chalk.green(`Found ${modules.length} API modules:`));
     
-    // Для каждого модуля создаем подкоманду
+    // Create a subcommand for each module
     modules.forEach(moduleName => {
       const moduleCommand = this.program
         .command(moduleName)
-        .description(`Методы модуля ${moduleName}`);
+        .description(`Methods of ${moduleName} module`);
       
-      // Получаем все методы модуля
+      // Get all methods of the module
       const methods = this.wrapper.getModuleMethods(moduleName);
-      console.log(chalk.blue(`  - ${moduleName} (${methods.length} методов)`));
+      console.log(chalk.blue(`  - ${moduleName} (${methods.length} methods)`));
       
-      // Для каждого метода создаем подкоманду модуля
+      // Create a subcommand for each method of the module
       methods.forEach(methodName => {
         moduleCommand
           .command(methodName)
-          .description(`Вызов метода ${moduleName}.${methodName}`)
-          .option('-p, --params <json>', 'Параметры в формате JSON')
-          .option('-a, --args <args...>', 'Аргументы через пробел')
+          .description(`Call method ${moduleName}.${methodName}`)
+          .option('-p, --params <json>', 'Parameters in JSON format')
+          .option('-a, --args <args...>', 'Space-separated arguments')
           .action(async (options) => {
             try {
               let args: any[] = [];
               
-              // Обрабатываем параметры
+              // Process parameters
               if (options.params) {
                 try {
                   const params = JSON.parse(options.params);
                   args.push(params);
                 } catch (error) {
-                  console.error(chalk.red(`Ошибка парсинга JSON параметров: ${error}`));
+                  console.error(chalk.red(`Error parsing JSON parameters: ${error}`));
                   process.exit(1);
                 }
               }
               
-              // Добавляем позиционные аргументы, если они есть
+              // Add positional arguments if they exist
               if (options.args && options.args.length > 0) {
-                // Пытаемся преобразовать строковые аргументы в нужные типы (числа, булевы и т.д.)
+                // Try to convert string arguments to appropriate types (numbers, booleans, etc.)
                 const parsedArgs = options.args.map((arg: string) => {
-                  // Попытка распарсить JSON
+                  // Try to parse JSON
                   try {
                     return JSON.parse(arg);
                   } catch {
-                    // Если не получается - оставляем как строку
+                    // If parsing fails - leave as string
                     return arg;
                   }
                 });
@@ -99,30 +99,30 @@ class TonApiCli {
                 args = args.concat(parsedArgs);
               }
               
-              console.log(chalk.yellow(`Вызов ${moduleName}.${methodName} с аргументами:`), args);
+              console.log(chalk.yellow(`Calling ${moduleName}.${methodName} with arguments:`), args);
               
-              // Вызываем метод API
+              // Call API method
               const result = await this.wrapper.callMethod(moduleName, methodName, ...args);
               
-              // Выводим результат
-              console.log(chalk.green('Результат:'));
+              // Display result
+              console.log(chalk.green('Result:'));
               console.log(JSON.stringify(result, null, 2));
             } catch (error: any) {
-              console.error(chalk.red(`Ошибка: ${error.message}`));
+              console.error(chalk.red(`Error: ${error.message}`));
               process.exit(1);
             }
           });
       });
     });
     
-    // Добавляем команду для вывода всех доступных модулей и методов
+    // Add command to display all available modules and methods
     this.program
       .command('list')
-      .description('Показать список всех доступных модулей и методов')
+      .description('Show list of all available modules and methods')
       .action(() => {
         const modules = this.wrapper.getApiModules();
         
-        console.log(chalk.green(`Доступные модули и методы TON API:`));
+        console.log(chalk.green(`Available modules and methods of TON API:`));
         
         modules.forEach(moduleName => {
           console.log(chalk.blue(`\n${moduleName}`));
@@ -136,13 +136,13 @@ class TonApiCli {
   }
 
   /**
-   * Запускает CLI приложение
+   * Runs the CLI application
    */
   run() {
     this.program.parse(process.argv);
   }
 }
 
-// Создаем и запускаем CLI
+// Create and run CLI
 const cli = new TonApiCli();
 cli.run(); 
