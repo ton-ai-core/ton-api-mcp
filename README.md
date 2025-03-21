@@ -1,16 +1,16 @@
 # TON API CLI
 
-Консольный интерфейс для работы с [TON API](https://tonapi.io). Позволяет использовать все возможности TON API через удобный командный интерфейс.
+Command-line interface for [TON API](https://tonapi.io). Allows you to use all TON API capabilities through a convenient command-line interface.
 
-## Особенности
+## Features
 
-- Поддержка всех методов TON API
-- Автоматическое обнаружение и генерация CLI команд для всех доступных методов API
-- Поддержка основной сети (mainnet) и тестовой сети (testnet)
-- Гибкая передача параметров через командную строку или JSON-объекты
-- Форматированный вывод результатов
+- Support for all TON API methods
+- Automatic discovery and generation of CLI commands for all available API methods
+- Support for mainnet and testnet
+- Flexible parameter passing through command line or JSON objects
+- Formatted output of results
 
-## Установка
+## Installation
 
 ```bash
 git clone https://github.com/ton-ai-core/tonapi-cli.git
@@ -19,94 +19,93 @@ npm install
 npm run build
 ```
 
-## Требования
+## Requirements
 
-- Node.js 14.x или выше
-- API-ключ от [TON API](https://tonapi.io)
+- Node.js 14.x or higher
+- API key from [TON API](https://tonapi.io)
 
-## Настройка API-ключа
+## API Key Configuration
 
-Перед использованием CLI необходимо указать API-ключ. Это можно сделать двумя способами:
+Before using the CLI, you need to specify an API key. This can be done in two ways:
 
-1. Через переменную окружения:
+1. Through an environment variable:
    ```bash
    export TON_API_KEY="your-api-key-here"
    ```
 
-2. Через параметр командной строки:
+2. Using a command-line parameter:
    ```bash
-   node bin/ton-api-cli.js --api-key="your-api-key-here" [команды...]
+   node bin/ton-api-cli.js --api-key="your-api-key-here" [commands...]
    ```
 
-## Использование
+## Usage
 
-### Общий формат команд
+### General Command Format
 
 ```bash
-node bin/ton-api-cli.js [опции] <модуль> <метод> [параметры]
+node bin/ton-api-cli.js [options] <module> <method> [parameters]
 ```
 
-### Опции
+### Options
 
-- `-t, --testnet` - использовать тестовую сеть вместо основной
-- `-k, --api-key <key>` - указать API-ключ
-- `-h, --help` - показать справку
+- `-t, --testnet` - use testnet instead of mainnet
+- `-k, --api-key <key>` - specify the API key
+- `-h, --help` - show help
 
-### Список доступных модулей и методов
+### List of Available Modules and Methods
 
 ```bash
 node bin/ton-api-cli.js list
 ```
 
-### Примеры использования
+### Usage Examples
 
-#### Получение информации о транзакции
+#### Get Transaction Information
 ```bash
 node bin/ton-api-cli.js blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8
 ```
 
-#### Поиск аккаунтов
+#### Search for Accounts
 ```bash
 node bin/ton-api-cli.js accounts searchAccounts -a "ton" -a 2
 ```
 
-#### Получение информации об аккаунте
+#### Get Account Information
 ```bash
 node bin/ton-api-cli.js accounts getAccount -a "0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f"
 ```
 
-Более подробные примеры см. в [документации с примерами](docs/examples.md).
+For more detailed examples, see the [examples documentation](docs/examples.md).
 
-## Структура проекта
+## Project Structure
 
-- `src/` - исходный код проекта
-- `bin/` - скомпилированные файлы для запуска
-- `docs/` - документация
-- `node_modules/` - зависимости
+- `src/` - project source code
+- `bin/` - compiled files for execution
+- `docs/` - documentation
 
-## Разработка
+## Development
 
-### Сборка проекта
+### Building the Project
 
 ```bash
 npm run build
 ```
 
-### Запуск тестов
+### Running Tests
 
 ```bash
 npm test
 ```
 
-## Лицензия
+## License
 
 MIT
 
-## Авторы
+## Authors
 
-- Автор исходного проекта
+- Original project author
 
-## Благодарности
+## Acknowledgments
 
-- [TON API](https://tonapi.io) за предоставление API
-- [tonapi-sdk-js](https://github.com/tonkeeper/tonapi-sdk-js) за JavaScript SDK для работы с TON API 
+- [TON API](https://tonapi.io) for providing the API
+- [tonapi-sdk-js](https://github.com/tonkeeper/tonapi-sdk-js) for JavaScript SDK for working with TON API 

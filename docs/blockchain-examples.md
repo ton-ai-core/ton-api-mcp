@@ -1,125 +1,125 @@
-# Примеры работы с блокчейн-транзакциями
+# Blockchain Transactions Examples
 
-В этом документе представлены примеры использования TON API CLI для работы с блокчейн-транзакциями.
+This document presents examples of using TON API CLI for working with blockchain transactions.
 
-## Получение информации о транзакции
+## Getting Transaction Information
 
-Для получения детальной информации о транзакции по её хешу используйте метод `getBlockchainTransaction`:
+To get detailed information about a transaction by its hash, use the `getBlockchainTransaction` method:
 
 ```bash
-# Формат команды
-node bin/ton-api-cli.js blockchain getBlockchainTransaction -a [хеш_транзакции]
+# Command format
+node bin/ton-api-cli.js blockchain getBlockchainTransaction -a [transaction_hash]
 
-# Пример для основной сети
+# Example for mainnet
 node bin/ton-api-cli.js blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8
 
-# Пример для тестовой сети
+# Example for testnet
 node bin/ton-api-cli.js -t blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8
 ```
 
-### Результат
+### Result
 
-Структура результата включает следующие поля:
+The result structure includes the following fields:
 
-- `hash` - хеш транзакции
-- `lt` - логическое время транзакции
-- `account` - информация об аккаунте (адрес, признак скама, признак кошелька)
-- `success` - признак успешного выполнения
-- `utime` - время создания (UNIX timestamp)
-- `orig_status` - исходный статус
-- `end_status` - конечный статус
-- `total_fees` - общая комиссия
-- `end_balance` - конечный баланс
-- `transaction_type` - тип транзакции
-- `in_msg` - информация о входящем сообщении
-- `out_msgs` - информация о исходящих сообщениях
-- `block` - информация о блоке
-- `compute_phase` - информация о фазе вычисления
-- `credit_phase` - информация о фазе кредита
-- `raw` - сырые данные транзакции
+- `hash` - transaction hash
+- `lt` - logical transaction time
+- `account` - account information (address, scam flag, wallet flag)
+- `success` - successful execution flag
+- `utime` - creation time (UNIX timestamp)
+- `orig_status` - original status
+- `end_status` - final status
+- `total_fees` - total fees
+- `end_balance` - final balance
+- `transaction_type` - transaction type
+- `in_msg` - information about the incoming message
+- `out_msgs` - information about outgoing messages
+- `block` - block information
+- `compute_phase` - computation phase information
+- `credit_phase` - credit phase information
+- `raw` - raw transaction data
 
-## Получение транзакций по блоку
+## Getting Transactions by Block
 
-Для получения списка транзакций в указанном блоке используйте метод `getBlockchainBlockTransactions`:
+To get a list of transactions in a specified block, use the `getBlockchainBlockTransactions` method:
 
 ```bash
-# Получение транзакций блока в мастерчейне
+# Getting transactions of a block in the masterchain
 node bin/ton-api-cli.js blockchain getBlockchainBlockTransactions -a -1 -a -9223372036854775808 -a 31129704
 
-# Формат команды
+# Command format
 node bin/ton-api-cli.js blockchain getBlockchainBlockTransactions -a [workchain] -a [shard] -a [seqno]
 ```
 
-## Получение транзакций по хешу сообщения
+## Getting Transactions by Message Hash
 
-Если у вас есть хеш сообщения, и вы хотите найти транзакцию, используйте метод `getBlockchainTransactionByMessageHash`:
+If you have a message hash and want to find the transaction, use the `getBlockchainTransactionByMessageHash` method:
 
 ```bash
-# Формат команды
-node bin/ton-api-cli.js blockchain getBlockchainTransactionByMessageHash -a [хеш_сообщения]
+# Command format
+node bin/ton-api-cli.js blockchain getBlockchainTransactionByMessageHash -a [message_hash]
 
-# Пример
+# Example
 node bin/ton-api-cli.js blockchain getBlockchainTransactionByMessageHash -a af1dd2c4a229a06773694ce90b9210a58852325bbb520e1e2518ebe235e779f8
 ```
 
-## Получение списка транзакций аккаунта
+## Getting a List of Account Transactions
 
-Для получения списка последних транзакций аккаунта используйте метод `getBlockchainAccountTransactions`:
+To get a list of the latest account transactions, use the `getBlockchainAccountTransactions` method:
 
 ```bash
-# Формат команды
-node bin/ton-api-cli.js blockchain getBlockchainAccountTransactions -a [адрес] -a [limit]
+# Command format
+node bin/ton-api-cli.js blockchain getBlockchainAccountTransactions -a [address] -a [limit]
 
-# Пример: получение 5 последних транзакций аккаунта
+# Example: getting the 5 latest transactions of an account
 node bin/ton-api-cli.js blockchain getBlockchainAccountTransactions -a "0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f" -a 5
 ```
 
-## Получение блока по его идентификатору
+## Getting a Block by Its Identifier
 
-Для получения информации о блоке по его идентификатору используйте метод `getBlockchainBlock`:
+To get information about a block by its identifier, use the `getBlockchainBlock` method:
 
 ```bash
-# Формат команды
+# Command format
 node bin/ton-api-cli.js blockchain getBlockchainBlock -a [workchain] -a [shard] -a [seqno]
 
-# Пример
+# Example
 node bin/ton-api-cli.js blockchain getBlockchainBlock -a -1 -a -9223372036854775808 -a 31129704
 ```
 
-## Передача параметров в JSON-формате
+## Passing Parameters in JSON Format
 
-Для методов, требующих сложные параметры, рекомендуется использовать формат JSON через флаг `-p` или `--params`:
+For methods requiring complex parameters, it is recommended to use JSON format with the `-p` or `--params` flag:
 
 ```bash
-# Получение списка транзакций с дополнительными параметрами
+# Getting a list of transactions with additional parameters
 node bin/ton-api-cli.js blockchain getBlockchainAccountTransactions -p '{"account":"0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f","limit":10,"beforeLt":32604955000003}'
 ```
 
-## Локализация транзакции
+## Transaction Localization
 
-Для поиска транзакции по исходным параметрам используйте метод `tryLocateTx`:
+To search for a transaction by source parameters, use the `tryLocateTx` method:
 
 ```bash
-# Формат команды
+# Command format
 node bin/ton-api-cli.js blockchain tryLocateTx -p '{"source":"0:489cfb3ada47024860f09c24f1d052f380da6efedeac4dc6be98e5c89d83c121","destination":"0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f","created_lt":32604955000002}'
 ```
 
-## Анализ неуспешных транзакций
+## Analysis of Unsuccessful Transactions
 
-Для получения дополнительной информации о неуспешных транзакциях, обратите внимание на поля `success`, `exit_code` и `aborted`:
+To get additional information about unsuccessful transactions, pay attention to the fields `success`, `exit_code`, and `aborted`:
 
 ```bash
-# Пример анализа неуспешной транзакции
+# Example of analyzing an unsuccessful transaction
 node bin/ton-api-cli.js blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8 | grep -E "success|exit_code|aborted"
 ```
 
-## Примечания
+## Notes
 
-1. Все команды требуют установки API-ключа через переменную окружения `TON_API_KEY` или параметр `--api-key`.
-2. Для работы с тестовой сетью добавьте флаг `-t` или `--testnet`.
-3. Для получения справки по конкретной команде используйте `--help`.
+1. All commands require setting an API key through the `TON_API_KEY` environment variable or the `--api-key` parameter.
+2. To work with the testnet, add the `-t` or `--testnet` flag.
+3. To get help on a specific command, use `--help`.
 
 ```bash
-# Пример получения справки
+# Example of getting help
 node bin/ton-api-cli.js blockchain getBlockchainTransaction --help
 ``` 

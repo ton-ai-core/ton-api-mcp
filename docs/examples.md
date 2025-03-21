@@ -1,95 +1,95 @@
-## Примеры использования TON API CLI
+## TON API CLI Usage Examples
 
-### Настройка
+### Setup
 
-Перед использованием CLI необходимо получить API-ключ с [TON API](https://tonapi.io).
+Before using the CLI, you need to obtain an API key from [TON API](https://tonapi.io).
 
-API-ключ можно указать несколькими способами:
-1. Через переменную окружения `TON_API_KEY`
-2. Через параметр командной строки `--api-key`
+The API key can be specified in several ways:
+1. Through the `TON_API_KEY` environment variable
+2. Using the `--api-key` command-line parameter
 
 ```bash
-# Установка через переменную окружения
+# Setting via environment variable
 export TON_API_KEY="your-api-key-here"
 
-# Или указание напрямую при вызове команды
-node bin/ton-api-cli.js --api-key="your-api-key-here" [команды...]
+# Or specifying directly when calling a command
+node bin/ton-api-cli.js --api-key="your-api-key-here" [commands...]
 ```
 
-### Выбор сети
+### Network Selection
 
-Для выбора тестовой сети вместо основной используйте флаг `-t` или `--testnet`:
+To select testnet instead of mainnet, use the `-t` or `--testnet` flag:
 
 ```bash
-# Использование тестовой сети
-node bin/ton-api-cli.js -t [команды...]
+# Using testnet
+node bin/ton-api-cli.js -t [commands...]
 ```
 
-### Список доступных модулей и методов
+### List of Available Modules and Methods
 
-Для просмотра всех доступных модулей и методов используйте команду `list`:
+To view all available modules and methods, use the `list` command:
 
 ```bash
 node bin/ton-api-cli.js list
 ```
 
-### Получение информации о транзакции
+### Getting Transaction Information
 
-Для получения информации о транзакции используйте метод `getBlockchainTransaction` модуля `blockchain`:
+To get information about a transaction, use the `getBlockchainTransaction` method of the `blockchain` module:
 
 ```bash
-# Формат команды
-node bin/ton-api-cli.js blockchain getBlockchainTransaction -a [хеш_транзакции]
+# Command format
+node bin/ton-api-cli.js blockchain getBlockchainTransaction -a [transaction_hash]
 
-# Пример
+# Example
 node bin/ton-api-cli.js blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8
 
-# Использование тестовой сети
+# Using testnet
 node bin/ton-api-cli.js -t blockchain getBlockchainTransaction -a a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8
 ```
 
-Результатом будет JSON-объект с подробной информацией о транзакции, включая:
-- Hash транзакции
-- Логическое время (lt)
-- Адрес аккаунта
-- Статус успешности
-- Время создания
-- Информация о входящем сообщении
-- Информация о исходящих сообщениях
-- Фазы выполнения
-- И другие детали
+The result will be a JSON object with detailed information about the transaction, including:
+- Transaction hash
+- Logical time (lt)
+- Account address
+- Success status
+- Creation time
+- Information about the incoming message
+- Information about outgoing messages
+- Execution phases
+- And other details
 
-### Поиск аккаунтов
+### Account Search
 
-Для поиска аккаунтов используйте метод `searchAccounts` модуля `accounts`:
+To search for accounts, use the `searchAccounts` method of the `accounts` module:
 
 ```bash
-# Поиск аккаунтов с именем "ton" и лимитом 2 результата
+# Search for accounts with the name "ton" and a limit of 2 results
 node bin/ton-api-cli.js accounts searchAccounts -a "ton" -a 2
 ```
 
-### Параметры команд
+### Command Parameters
 
-Большинство методов принимают параметры, которые можно передать двумя способами:
+Most methods accept parameters that can be passed in two ways:
 
-1. Через аргументы командной строки с флагом `-a` или `--args`:
+1. Through command-line arguments with the `-a` or `--args` flag:
    ```bash
-   node bin/ton-api-cli.js [модуль] [метод] -a [аргумент1] -a [аргумент2] ...
+   node bin/ton-api-cli.js [module] [method] -a [argument1] -a [argument2] ...
    ```
 
-2. Через JSON-объект с флагом `-p` или `--params`:
+2. Through a JSON object with the `-p` or `--params` flag:
    ```bash
-   node bin/ton-api-cli.js [модуль] [метод] -p '{"параметр1": "значение1", "параметр2": "значение2"}'
+   node bin/ton-api-cli.js [module] [method] -p '{"parameter1": "value1", "parameter2": "value2"}'
    ```
 
-### Примеры использования других методов
+### Examples of Using Other Methods
 
-#### Получение информации об аккаунте
+#### Getting Account Information
 ```bash
 node bin/ton-api-cli.js accounts getAccount -a "0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f"
 ```
 
-#### Получение транзакций аккаунта
+#### Getting Account Transactions
 ```bash
 node bin/ton-api-cli.js accounts getAccountEvents -a "0:4e22841dedd96233393921ad8fedb1fee7cfcc705143292a5434a6bc9f0b829f" -a '{"limit": 5}'
 ``` 
