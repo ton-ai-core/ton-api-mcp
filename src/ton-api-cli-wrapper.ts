@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /**
- * Wrapper class for automatic creation of CLI commands based on tonapi-sdk-js
+ * Wrapper class for working with tonapi-sdk-js
  */
 export class TonApiCliWrapper {
   private client: Api<unknown>;
@@ -196,5 +196,64 @@ export class TonApiCliWrapper {
     } catch (error) {
       return '';
     }
+  }
+
+  /**
+   * Parses arguments from CLI options
+   * @param options Options object containing params and args
+   * @returns Array of parsed arguments
+   */
+  parseArguments(options: { params?: string; args?: string[] }): any[] {
+    let args: any[] = [];
+    
+    // Process parameters
+    if (options.params) {
+      try {
+        const params = JSON.parse(options.params);
+        args.push(params);
+      } catch (error) {
+        console.error(chalk.red(`Error parsing JSON parameters: ${error}`));
+        throw new Error(`Error parsing JSON parameters: ${error}`);
+      }
+    }
+    
+    // Add positional arguments if they exist
+    if (options.args && options.args.length > 0) {
+      // Try to convert string arguments to appropriate types (numbers, booleans, etc.)
+      const parsedArgs = options.args.map((arg: string) => {
+        // Try to parse JSON
+        try {
+          return JSON.parse(arg);
+        } catch {
+          // If parsing fails - leave as string
+          return arg;
+        }
+      });
+      
+      args = args.concat(parsedArgs);
+    }
+    
+    return args;
+  }
+
+  /**
+   * Gets sorted list of all modules and methods
+   * @returns Object with sorted modules and their methods
+   */
+  getSortedModulesAndMethods(): { modules: string[]; methodsByModule: Record<string, string[]> } {
+    const modules = this.getApiModules();
+    const sortedModules = [...modules].sort();
+    
+    const methodsByModule: Record<string, string[]> = {};
+    
+    sortedModules.forEach(moduleName => {
+      const methods = this.getModuleMethods(moduleName);
+      methodsByModule[moduleName] = [...methods].sort();
+    });
+    
+    return {
+      modules: sortedModules,
+      methodsByModule
+    };
   }
 } 

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import chalk from 'chalk';
-import { TonApiCliWrapper } from './ton-api-cli-wrapper';
+import { TonApiCliWrapper } from './ton-api-cli-wrapper.js';
 
 /**
- * Automatically generates CLI commands for tonapi-sdk-js
+ * CLI interface for tonapi-sdk-js
  */
 class TonApiCli {
   private program: Command;
@@ -77,34 +77,8 @@ API Signature: ${this.wrapper.getMethodSignature(moduleName, methodName)}
 `)
           .action(async (options) => {
             try {
-              let args: any[] = [];
-              
-              // Process parameters
-              if (options.params) {
-                try {
-                  const params = JSON.parse(options.params);
-                  args.push(params);
-                } catch (error) {
-                  console.error(chalk.red(`Error parsing JSON parameters: ${error}`));
-                  process.exit(1);
-                }
-              }
-              
-              // Add positional arguments if they exist
-              if (options.args && options.args.length > 0) {
-                // Try to convert string arguments to appropriate types (numbers, booleans, etc.)
-                const parsedArgs = options.args.map((arg: string) => {
-                  // Try to parse JSON
-                  try {
-                    return JSON.parse(arg);
-                  } catch {
-                    // If parsing fails - leave as string
-                    return arg;
-                  }
-                });
-                
-                args = args.concat(parsedArgs);
-              }
+              // Parse arguments from CLI options using wrapper's method
+              const args = this.wrapper.parseArguments(options);
               
               console.log(chalk.yellow(`Calling ${moduleName}.${methodName} with arguments:`), args);
               
@@ -123,22 +97,27 @@ API Signature: ${this.wrapper.getMethodSignature(moduleName, methodName)}
     });
     
     // Add command to display all available modules and methods
+    this.addListCommand();
+  }
+
+  /**
+   * Adds the list command to the program
+   */
+  private addListCommand() {
     this.program
       .command('list')
       .description('Show list of all available modules and methods')
       .action(() => {
-        const modules = this.wrapper.getApiModules();
+        // Get sorted modules and methods
+        const { modules: sortedModules, methodsByModule } = this.wrapper.getSortedModulesAndMethods();
         
         console.log(chalk.green(`Available modules and methods of TON API (sorted alphabetically):`));
-        
-        // Sort modules alphabetically
-        const sortedModules = [...modules].sort();
         
         sortedModules.forEach(moduleName => {
           console.log(chalk.blue(`\n${moduleName}`));
           
-          // Get methods and sort them alphabetically
-          const methods = this.wrapper.getModuleMethods(moduleName).sort();
+          // Get methods for current module
+          const methods = methodsByModule[moduleName];
           
           methods.forEach(methodName => {
             // Get method description and signature

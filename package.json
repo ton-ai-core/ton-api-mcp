@@ -5,11 +5,15 @@
   "main": "bin/index.js",
   "bin": {
     "tonapi": "bin/index.js",
-    "tonapi-cli": "bin/ton-api-cli.js"
+    "tonapi-cli": "bin/ton-api-cli.js",
+    "tonapi-mcp": "bin/ton-api-mcp-server.js"
   },
   "scripts": {
     "build": "tsc",
     "start": "node bin/ton-api-cli.js",
+    "start:mcp": "node bin/ton-api-mcp-server.js",
+    "start:mcp:http": "node bin/ton-api-mcp-server.js --http",
+    "start:mcp:demo": "node bin/ton-api-mcp-server.js --http --demo",
     "test": "jest"
   },
   "keywords": [
@@ -21,12 +25,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.7.0",
     "axios": "^1.6.5",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "commander": "^11.1.0",
     "domhandler": "^5.0.3",
     "dotenv": "^16.3.1",
+    "express": "^4.21.2",
     "inquirer": "^8.2.6",
     "puppeteer": "^24.4.0",
     "ton": "^13.9.0",
@@ -34,6 +40,7 @@
     "turndown": "^7.2.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.1",
     "@types/inquirer": "^8.2.6",
     "@types/jest": "^29.5.10",
     "@types/node": "^20.10.5",
