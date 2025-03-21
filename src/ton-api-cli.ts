@@ -13,9 +13,6 @@ class TonApiCli {
   constructor() {
     this.program = new Command();
     
-    // Создаем экземпляр обертки API
-    this.wrapper = new TonApiCliWrapper();
-    
     // Настраиваем основную программу
     this.program
       .name('tonapi-cli')
@@ -23,14 +20,23 @@ class TonApiCli {
       .version('1.0.0')
       .option('-t, --testnet', 'Использовать тестовую сеть вместо основной')
       .option('-k, --api-key <key>', 'API ключ для TON API')
-      .hook('preAction', (thisCommand) => {
-        // Обновляем экземпляр обертки с учетом переданных опций
+      .hook('preAction', (thisCommand, actionCommand) => {
+        // Пропускаем создание обертки с проверкой API-ключа для команды list
+        const commandName = actionCommand.name();
+        if (commandName === 'list') {
+          return; // Для list используем уже созданный экземпляр с skipApiKeyCheck: true
+        }
+        
+        // Создаем экземпляр обертки с учетом переданных опций для выполнения команды
         const options = thisCommand.opts();
         this.wrapper = new TonApiCliWrapper({
           testnet: options.testnet,
           apiKey: options.apiKey
         });
       });
+    
+    // Создаем экземпляр обертки API с пропуском проверки API-ключа только для генерации команд
+    this.wrapper = new TonApiCliWrapper({ skipApiKeyCheck: true });
     
     // Генерируем команды для всех модулей API
     this.generateCommands();

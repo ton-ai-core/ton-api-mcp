@@ -8,7 +8,7 @@
     "tonapi-cli": "bin/ton-api-cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cd bin && rm -f wrapper.js && ln -sf ton-api-cli.js wrapper.js",
     "start": "node bin/index.js",
     "test": "jest",
     "tonapi:generate-tests": "ts-node src/generate-api-tests.ts",

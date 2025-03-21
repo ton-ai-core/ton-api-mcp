@@ -16,7 +16,7 @@ export class TonApiCliWrapper {
    * Создает экземпляр обертки для tonapi-sdk-js
    * @param options Опции инициализации
    */
-  constructor(options: { testnet?: boolean; apiKey?: string } = {}) {
+  constructor(options: { testnet?: boolean; apiKey?: string; skipApiKeyCheck?: boolean } = {}) {
     // Определяем используемую сеть
     const isTestnet = options.testnet === true;
     this.network = isTestnet ? 'testnet' : 'mainnet';
@@ -28,20 +28,27 @@ export class TonApiCliWrapper {
     // Получаем API-ключ из опций или переменных окружения
     const apiKey = options.apiKey || process.env.TON_API_KEY;
     
-    // Проверяем наличие API-ключа
-    if (!apiKey) {
+    // Проверяем наличие API-ключа только если проверка не пропускается
+    if (!apiKey && !options.skipApiKeyCheck) {
       console.error(chalk.red('Ошибка: API-ключ не указан. Укажите его с помощью опции --api-key или установите переменную окружения TON_API_KEY'));
       throw new Error('API key is required');
+    }
+    
+    // Определяем заголовки запросов
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Добавляем заголовок авторизации только если API-ключ предоставлен
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
     }
     
     // Создаем HTTP клиент с настройками
     const httpClient = new HttpClient({
       baseUrl,
       baseApiParams: {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        }
+        headers
       }
     });
     
