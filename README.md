@@ -46,6 +46,16 @@ node bin/ton-api-mcp-server.js --api-key YOUR_API_KEY
 node bin/ton-api-mcp-server.js --api-key YOUR_API_KEY --modules blockchain,accounts
 ```
 
+### Using NPX with the npm Package
+
+If you've installed the package from npm, you can run the MCP server directly using npx:
+
+```bash
+npx ton-api-mcp --api-key AFPJTKEBPOX3AIYAAAAKA2HWOTRNJP5MUCV5DMDCZAAOCPSAYEYS3CILNQVLF2HWKED6USY --modules blockchain
+```
+
+This is especially convenient for integrating with AI assistants like Claude in Cursor.
+
 ## Command Line Parameters
 
 ```
@@ -59,14 +69,17 @@ node bin/ton-api-mcp-server.js --api-key YOUR_API_KEY --modules blockchain,accou
 
 For integration with Cursor (or other development environments supporting MCP):
 
-1. Run the MCP server in the background:
+1. Run the MCP server in the background using npx:
    ```bash
-   node bin/ton-api-mcp-server.js --api-key YOUR_API_KEY
+   npx ton-api-mcp --api-key AFPJTKEBPOX3AIYAAAAKA2HWOTRNJP5MUCV5DMDCZAAOCPSAYEYS3CILNQVLF2HWKED6USY --modules blockchain
    ```
 
 2. In Cursor:
    - Open MCP Servers settings
-   - Add a new server, specifying the TON API MCP launch command
+   - Add a new server, specifying the TON API MCP launch command:
+   ```
+   npx ton-api-mcp --api-key AFPJTKEBPOX3AIYAAAAKA2HWOTRNJP5MUCV5DMDCZAAOCPSAYEYS3CILNQVLF2HWKED6USY --modules blockchain
+   ```
 
 3. After successful connection, you can access any TON API methods directly through the AI assistant.
 
