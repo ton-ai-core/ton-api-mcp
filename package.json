@@ -1,6 +1,6 @@
 {
   "name": "ton-api-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "TON API Model Context Protocol (MCP) server for integrating TON API with AI assistants",
   "main": "bin/ton-api-mcp-server.js",
   "type": "module",
