@@ -11,19 +11,29 @@ dotenv.config();
 export class TonApiCliWrapper {
   private client: Api<unknown>;
   private network: string;
+  private moduleFilter: string[];
 
   /**
    * Creates an instance of the wrapper for tonapi-sdk-js
    * @param options Initialization options
    */
-  constructor(options: { testnet?: boolean; apiKey?: string; skipApiKeyCheck?: boolean } = {}) {
+  constructor(options: { 
+    testnet?: boolean; 
+    apiKey?: string; 
+    skipApiKeyCheck?: boolean;
+    moduleFilter?: string[];
+  } = {}) {
     // Determine the network to use
     const isTestnet = options.testnet === true;
     this.network = isTestnet ? 'testnet' : 'mainnet';
     
+    // Более подробное логирование параметра testnet
+    console.error(chalk.cyan(`TonApiCliWrapper constructor: testnet parameter: ${options.testnet} (${typeof options.testnet})`));
+    console.error(chalk.cyan(`TonApiCliWrapper constructor: isTestnet value: ${isTestnet} (${typeof isTestnet})`));
+    
     // Base API URL depending on the network
     const baseUrl = isTestnet ? 'https://testnet.tonapi.io' : 'https://tonapi.io';
-    console.log(chalk.blue(`Using ${this.network} network: ${baseUrl}`));
+    console.error(chalk.blue(`Using ${this.network} network: ${baseUrl}`));
     
     // Get API key from options or environment variables
     const apiKey = options.apiKey || process.env.TON_API_KEY;
@@ -54,6 +64,12 @@ export class TonApiCliWrapper {
     
     // Initialize API client
     this.client = new Api(httpClient);
+    
+    // Store module filter if provided
+    this.moduleFilter = options.moduleFilter || [];
+    if (this.moduleFilter.length > 0) {
+      console.error(chalk.blue(`Module filter applied: ${this.moduleFilter.join(', ')}`));
+    }
   }
 
   /**
@@ -61,12 +77,21 @@ export class TonApiCliWrapper {
    */
   getApiModules(): string[] {
     // Get all keys (modules) from API client, excluding service properties and methods
-    return Object.keys(this.client)
+    let modules = Object.keys(this.client)
       .filter(key => 
         typeof (this.client as any)[key] === 'object' && 
         key !== 'http' && 
         !key.startsWith('_')
       );
+    
+    // Apply module filter if set
+    if (this.moduleFilter && this.moduleFilter.length > 0) {
+      modules = modules.filter(module => 
+        this.moduleFilter.includes(module.toLowerCase())
+      );
+    }
+    
+    return modules;
   }
 
   /**

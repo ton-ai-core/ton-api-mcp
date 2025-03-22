@@ -2,19 +2,23 @@
   "name": "tonapi-cli",
   "version": "0.1.0",
   "description": "CLI tool for interacting with Tonapi API",
-  "main": "bin/index.js",
+  "main": "bin/ton-api-cli.js",
+  "type": "module",
   "bin": {
-    "tonapi": "bin/index.js",
+    "tonapi": "bin/ton-api-cli.js",
     "tonapi-cli": "bin/ton-api-cli.js",
     "tonapi-mcp": "bin/ton-api-mcp-server.js"
   },
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
+    "cli": "node bin/ton-api-cli.js",
+    "mcp": "node bin/ton-api-mcp-server.js",
+    "format": "prettier --write 'src/**/*.ts'",
+    "lint": "eslint src/",
     "start": "node bin/ton-api-cli.js",
     "start:mcp": "node bin/ton-api-mcp-server.js",
-    "start:mcp:http": "node bin/ton-api-mcp-server.js --http",
-    "start:mcp:demo": "node bin/ton-api-mcp-server.js --http --demo",
-    "test": "jest"
+    "test": "node test-api.js"
   },
   "keywords": [
     "ton",
@@ -25,29 +29,18 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.7.0",
-    "axios": "^1.6.5",
-    "chalk": "^4.1.2",
-    "cheerio": "^1.0.0",
-    "commander": "^11.1.0",
-    "domhandler": "^5.0.3",
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "axios": "^1.6.2",
+    "chalk": "^5.3.0",
     "dotenv": "^16.3.1",
-    "express": "^4.21.2",
-    "inquirer": "^8.2.6",
-    "puppeteer": "^24.4.0",
-    "ton": "^13.9.0",
     "tonapi-sdk-js": "^2.0.9",
-    "turndown": "^7.2.0"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.3"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1",
-    "@types/inquirer": "^8.2.6",
-    "@types/jest": "^29.5.10",
+    "@modelcontextprotocol/inspector": "^0.6.0",
     "@types/node": "^20.10.5",
-    "@types/turndown": "^5.0.5",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.1.6"
   }
 }
