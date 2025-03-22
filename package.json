@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ton-ai-core/tonapi-mcp.git"
+    "url": "git+https://github.com/ton-ai-core/ton-api-mcp.git"
   },
   "keywords": [
     "ton",
