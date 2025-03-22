@@ -59,25 +59,25 @@ const wrapper = new TonApiCliWrapper({
 
 // Module descriptions for TON API modules, based on documentation and SDK analysis
 const MODULE_DESCRIPTIONS: Record<string, string> = {
-  accounts: 'Operations with TON accounts, get balances, wallet information, and transaction history',
-  blockchain: 'Access to blockchain data, blocks, transactions, masterchain, and validators. This is the core module that powers TON Viewer and provides detailed blockchain information',
-  connect: 'Functionality for connecting and authorizing in dApps through TON Connect',
-  dns: 'Working with DNS records and domains in TON',
-  emulation: 'Emulation of smart contract execution and transactions without actually executing them',
-  events: 'Working with blockchain events and subscriptions to them',
-  extracurrency: 'Operations with additional currencies (tokens) in TON',
-  gasless: 'Tools for sending transactions without the sender paying gas (gas sponsoring)',
-  inscriptions: 'Working with inscription tokens in TON',
-  jettons: 'Operations with Jetton tokens (similar to ERC-20 in TON)',
-  liteserver: 'Low-level access to data via Lite Server Protocol',
-  multisig: 'Working with multi-signature wallets',
-  nft: 'Operations with NFT collections and tokens',
-  rates: 'Getting exchange rates for TON and tokens',
-  staking: 'Staking operations and operations with nominators',
-  storage: 'Working with TON Storage, uploading and downloading files',
-  traces: 'Transaction trace analysis and tracking',
-  utilities: 'Helper functions for working with TON',
-  wallet: 'Managing wallets and transactions'
+  accounts: 'Operations with TON accounts, get balances, wallet information, and transaction history. Provides the same data you see when viewing an address on https://tonscan.org/ such as EQBInPs62kcCSGDwnCTx0FLzgNpu_t6sTca-mOXInYPBISzT',
+  blockchain: 'Access to blockchain data, blocks, transactions, masterchain, and validators. This is the core module that powers TON Viewer (https://tonviewer.com) and TONScan (https://tonscan.org) and provides detailed blockchain information such as transaction details displayed at https://tonscan.org/tx/a0089b5ae47cb60a4d14fcd6b88836a1ec08151e8ac9b3631d680df7c2ae0bb8',
+  connect: 'Functionality for connecting and authorizing in dApps through TON Connect, which is the connection protocol used by many TON wallets shown on https://ton.org/wallets',
+  dns: 'Working with DNS records and domains in TON. Allows querying information about .ton domains similar to what you can see on https://dns.ton.org/ or when checking domain ownership on TONScan',
+  emulation: 'Emulation of smart contract execution and transactions without actually executing them on the blockchain. Helpful for testing interactions before sending real TON',
+  events: 'Working with blockchain events and subscriptions to them. Useful for monitoring activity like the "Events" tab shown on TONScan transaction pages',
+  extracurrency: 'Operations with additional currencies (tokens) in TON. Provides access to token data similar to what\'s displayed in the "Tokens" section of TONScan address pages',
+  gasless: 'Tools for sending transactions without the sender paying gas (gas sponsoring). Enables operations like those described on https://ton.org/docs/develop/dapps/tutorials/accept-payments-in-a-telegram-bot',
+  inscriptions: 'Working with inscription tokens in TON. Provides data about inscriptions that can be viewed on specialized explorers like https://getgems.io/inscription',
+  jettons: 'Operations with tokens in TON. Provides token data on the blockchain.',
+  liteserver: 'Low-level access to data via Lite Server Protocol. Provides direct blockchain access similar to what TONScan uses to gather data',
+  multisig: 'Working with multi-signature wallets. Lets you query and interact with multisig wallets like those shown on https://tonviewer.com/ when viewing a multisig wallet address',
+  nft: 'Operations with NFT collections and tokens. Access data similar to what you see on https://getgems.io/ or in the NFT section of an address on TONScan',
+  rates: 'Getting exchange rates for TON and tokens. Provides price data similar to what\'s shown in the header of TONScan',
+  staking: 'Staking operations and operations with nominators. Access staking data like what\'s shown on https://tonstake.com/ or on TONScan for validator addresses',
+  storage: 'Working with TON Storage, uploading and downloading files. Interface with storage services like those accessible via https://ton.org/storage',
+  traces: 'Transaction trace analysis and tracking. Get detailed execution information similar to the "Trace" tab on TONScan transaction pages',
+  utilities: 'Helper functions for working with TON. Various utility functions to help with address formatting, encoding, etc.',
+  wallet: 'Managing wallets and transactions. Create and manage wallets, similar to operations available in wallets listed on https://ton.org/wallets'
 };
 
 // Function to get module description
@@ -92,18 +92,18 @@ function getModuleDescription(moduleName: string): string {
 const CallMethodArgsSchema = z.object({
   module: z.string().describe('Name of the TON API module'),
   method: z.string().describe('Name of the method to call'),
-  params: z.record(z.unknown()).optional().describe('Parameters to pass to the method (JSON object)'),
+  params: z.record(z.unknown()).optional().describe('Parameters to pass to the method (JSON object). For account-related operations, provide the address in format seen on TONScan (e.g., EQBInPs62kcCSGDwnCTx0FLzgNpu_t6sTca-mOXInYPBISzT)'),
   args: z.array(z.unknown()).optional().describe('Additional arguments (array)'),
-  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet)')
+  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet). Use testnet for addresses shown on https://testnet.tonscan.org/')
 });
 
 const ListModulesArgsSchema = z.object({
-  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet)')
+  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet). Specifies whether to list modules available on https://tonscan.org/ (mainnet) or https://testnet.tonscan.org/ (testnet)')
 });
 
 const ListMethodsArgsSchema = z.object({
-  module: z.string().describe('Name of the TON API module to list methods for'),
-  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet)')
+  module: z.string().describe('Name of the TON API module to list methods for. Common modules include "blockchain" (similar to data on https://tonviewer.com/) and "accounts" (wallet info as on https://tonscan.org/)'),
+  network: z.enum(['mainnet', 'testnet']).optional().describe('Network to use (mainnet or testnet). Affects which methods are available and how they should be called')
 });
 
 const ToolInputSchema = ToolSchema.shape.inputSchema;
@@ -129,23 +129,24 @@ server.setRequestHandler(ListToolsRequestSchema, () => {
       {
         name: "call_method",
         description: 
-          "Call a TON API method from any available module. " +
-          "You must specify the module name and method name. " +
-          "You can provide parameters as a JSON object in 'params' or as individual arguments in 'args' array.",
+          "Call TON API method from any module. Specify module and method names. " +
+          "Parameters can be passed as a JSON object in 'params' or as array in 'args'. " +
+          "Query data similar to https://tonscan.org or https://tonviewer.com explorers. " +
+          "Example: view account at https://testnet.tonscan.org/address/EQBInPs62kcCSGDwnCTx0FLzgNpu_t6sTca-mOXInYPBISzT",
         inputSchema: zodToJsonSchema(CallMethodArgsSchema) as ToolInput,
       },
       {
         name: "list_modules",
         description: 
-          "List all available TON API modules. " +
-          "Use this to discover what functionality is available through the API.",
+          "List all TON API modules. Includes 'blockchain' for data shown on https://tonscan.org, " +
+          "'accounts' for wallet info as displayed on https://tonviewer.com.",
         inputSchema: zodToJsonSchema(ListModulesArgsSchema) as ToolInput,
       },
       {
         name: "list_methods",
         description: 
-          "List all methods available in a specific TON API module. " +
-          "You must specify the module name.",
+          "List all methods in a specific TON API module. Get methods for querying data " +
+          "that appears on https://tonscan.org or https://tonviewer.com explorers.",
         inputSchema: zodToJsonSchema(ListMethodsArgsSchema) as ToolInput,
       },
     ],
