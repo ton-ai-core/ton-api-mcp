@@ -5,9 +5,8 @@
   "main": "bin/ton-api-mcp-server.js",
   "type": "module",
   "bin": {
-    "tonapi": "bin/ton-api-cli.js",
-    "tonapi-cli": "bin/ton-api-cli.js",
-    "tonapi-mcp": "bin/ton-api-mcp-server.js",
+    "ton-api": "bin/ton-api-cli.js",
+    "ton-api-cli": "bin/ton-api-cli.js",
     "ton-api-mcp": "bin/ton-api-mcp-server.js"
   },
   "scripts": {
@@ -29,7 +28,7 @@
     "ton",
     "blockchain",
     "cli",
-    "tonapi",
+    "ton-api",
     "mcp",
     "ai",
     "model context protocol"

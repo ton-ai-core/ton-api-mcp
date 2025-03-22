@@ -54,8 +54,8 @@ Each tool accepts parameters in JSON format and returns results in a structured 
 
 ```bash
 # Clone the repository
-git clone https://github.com/ton-ai-core/tonapi-mcp.git
-cd tonapi-mcp
+git clone https://github.com/ton-ai-core/ton-api-mcp.git
+cd ton-api-mcp
 
 # Install dependencies
 yarn install
@@ -114,7 +114,7 @@ TON_TESTNET=0
    - Enter a name in the field (e.g., "TON API")
    - Specify the launch command:
      ```
-     node /absolute/path/to/tonapi-mcp/bin/ton-api-mcp-server.js --api-key YOUR_API_KEY
+     node /absolute/path/to/ton-api-mcp/bin/ton-api-mcp-server.js --api-key YOUR_API_KEY
      ```
    - Click "Save"
 

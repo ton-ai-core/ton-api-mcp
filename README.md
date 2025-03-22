@@ -26,8 +26,8 @@ TON API MCP provides an interface for interacting with the TON blockchain throug
 
 ```bash
 # Clone the repository
-git clone https://github.com/ton-ai-core/tonapi-mcp.git
-cd tonapi-mcp
+git clone https://github.com/ton-ai-core/ton-api-mcp.git
+cd ton-api-mcp
 
 # Install dependencies
 yarn install
