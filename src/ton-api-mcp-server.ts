@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 import path from 'path';
 import fs from 'fs';
+import { randomUUID } from 'crypto';
 
 // Load environment variables from .env file if present
 dotenv.config();
@@ -304,13 +305,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 const result = await requestWrapper.callMethod(module, method, accountId);
                 console.error(chalk.green(`Successfully called ${module}.${method}`));
                 
+                // Обрабатываем большие ответы
+                const processedResponse = processLargeResponse(result);
+                
                 // Возвращаем результат напрямую как JSON-объект
                 return {
                   content: [
                     { 
                       type: "text", 
                       text: JSON.stringify({
-                        result: result
+                        result: processedResponse.isFileReference 
+                          ? processedResponse.content 
+                          : result
                       })
                     }
                   ],
@@ -515,12 +521,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                   // Пытаемся получить JSON из ответа
                   const responseObj = await response.clone().json();
                   console.error(chalk.green(`Successfully parsed JSON from Response`));
+                  
+                  // Обрабатываем большие ответы
+                  const processedResponse = processLargeResponse(responseObj);
+                  
                   return {
                     content: [
                       { 
                         type: "text", 
                         text: JSON.stringify({
-                          result: responseObj
+                          result: processedResponse.isFileReference 
+                            ? processedResponse.content 
+                            : responseObj
                         })
                       }
                     ],
@@ -535,12 +547,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     try {
                       const parsedJSON = JSON.parse(responseText);
                       console.error(chalk.green(`Successfully parsed text as JSON`));
+                      
+                      // Обрабатываем большие ответы
+                      const processedResponse = processLargeResponse(parsedJSON);
+                      
                       return {
                         content: [
                           { 
                             type: "text", 
                             text: JSON.stringify({
-                              result: parsedJSON
+                              result: processedResponse.isFileReference 
+                                ? processedResponse.content 
+                                : parsedJSON
                             })
                           }
                         ],
@@ -548,12 +566,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     } catch (jsonParseError) {
                       // Если и это не удалось, возвращаем текст как есть
                       console.error(chalk.yellow(`Text is not JSON, returning as plain text`));
+                      
+                      // Обрабатываем большие текстовые ответы
+                      const processedResponse = processLargeResponse(responseText);
+                      
                       return {
                         content: [
                           { 
                             type: "text", 
                             text: JSON.stringify({
-                              result: responseText
+                              result: processedResponse.isFileReference 
+                                ? processedResponse.content 
+                                : responseText
                             })
                           }
                         ],
@@ -603,13 +627,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               };
             }
             
-            // If we got here, return the result as is
+            // If we got here, process and return the result
+            // Обрабатываем большие ответы
+            const processedResponse = processLargeResponse(result);
+            
             return {
               content: [
                 { 
                   type: "text", 
                   text: JSON.stringify({
-                    result: result
+                    result: processedResponse.isFileReference 
+                      ? processedResponse.content 
+                      : result
                   })
                 }
               ],
@@ -871,3 +900,55 @@ runServer().catch((error) => {
   console.error(chalk.red("Fatal error running server:"), error);
   process.exit(1);
 });
+
+// Константа для определения максимального размера JSON ответа (в байтах)
+const MAX_JSON_RESPONSE_SIZE = 10 * 1024; // 10KB - можно настроить по необходимости
+// Путь к директории для сохранения ответов
+const RESPONSES_DIR = path.join(process.cwd(), 'responses');
+
+// Функция для создания директории для ответов, если она не существует
+function ensureResponsesDirExists() {
+  if (!fs.existsSync(RESPONSES_DIR)) {
+    console.error(chalk.blue(`Creating responses directory: ${RESPONSES_DIR}`));
+    fs.mkdirSync(RESPONSES_DIR, { recursive: true });
+  }
+}
+
+// Функция для сохранения большого JSON ответа в файл
+function saveResponseToFile(data: unknown): string {
+  ensureResponsesDirExists();
+  const filename = `response_${randomUUID()}.json`;
+  const filepath = path.join(RESPONSES_DIR, filename);
+  
+  fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf8');
+  console.error(chalk.green(`Large response saved to file: ${filepath}`));
+  
+  return filename;
+}
+
+// Функция для проверки размера JSON и сохранения в файл при необходимости
+function processLargeResponse(data: unknown): { content: unknown, isFileReference: boolean } {
+  // Конвертируем данные в JSON строку
+  const jsonString = JSON.stringify(data);
+  
+  // Проверяем размер
+  if (jsonString.length > MAX_JSON_RESPONSE_SIZE) {
+    const filename = saveResponseToFile(data);
+    return {
+      content: {
+        truncated: true,
+        message: "Response is too large and has been saved to a file",
+        file: filename,
+        size: jsonString.length,
+        path: path.join(RESPONSES_DIR, filename)
+      },
+      isFileReference: true
+    };
+  }
+  
+  // Если размер в пределах нормы, возвращаем как есть
+  return {
+    content: data,
+    isFileReference: false
+  };
+}
