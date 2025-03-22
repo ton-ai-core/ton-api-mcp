@@ -1,13 +1,14 @@
 {
   "name": "ton-api-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TON API Model Context Protocol (MCP) server for integrating TON API with AI assistants",
-  "main": "bin/ton-api-cli.js",
+  "main": "bin/ton-api-mcp-server.js",
   "type": "module",
   "bin": {
     "tonapi": "bin/ton-api-cli.js",
     "tonapi-cli": "bin/ton-api-cli.js",
-    "tonapi-mcp": "bin/ton-api-mcp-server.js"
+    "tonapi-mcp": "bin/ton-api-mcp-server.js",
+    "ton-api-mcp": "bin/ton-api-mcp-server.js"
   },
   "scripts": {
     "build": "tsc",
@@ -50,5 +51,8 @@
     "@types/node": "^20.10.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
