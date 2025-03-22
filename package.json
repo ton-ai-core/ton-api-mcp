@@ -1,7 +1,7 @@
 {
-  "name": "tonapi-cli",
+  "name": "ton-api-mcp",
   "version": "0.1.0",
-  "description": "CLI tool for interacting with Tonapi API",
+  "description": "TON API Model Context Protocol (MCP) server for integrating TON API with AI assistants",
   "main": "bin/ton-api-cli.js",
   "type": "module",
   "bin": {
@@ -20,13 +20,20 @@
     "start:mcp": "node bin/ton-api-mcp-server.js",
     "test": "node test-api.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ton-ai-core/tonapi-mcp.git"
+  },
   "keywords": [
     "ton",
     "blockchain",
     "cli",
-    "tonapi"
+    "tonapi",
+    "mcp",
+    "ai",
+    "model context protocol"
   ],
-  "author": "",
+  "author": "skulidropek",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
